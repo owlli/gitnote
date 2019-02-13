@@ -401,7 +401,7 @@ git pull
 
 git pull时会提示有冲突,打开有冲突的文件,解决冲突后,再git add,git commit,git push
 
-### rebase
+### 变基
 
 把本地未push的分叉提交历史整理成直线,目的是使得我们在查看历史提交的变化时更容易,因为分叉的提交需要三方对比
 
@@ -410,7 +410,15 @@ git rebase
 git log --graph --pretty=oneline --abbrev-commit
 ```
 
+如果在A分支上执行
 
+```shell
+git rebase B分支名
+```
+
+是把当前分支的修改加入到B分支的最后的提交上,如下图所示
+
+![gitrebase.png](./image/gitrebase.png)
 
 
 
