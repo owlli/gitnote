@@ -1,0 +1,172 @@
+约定：字段前带~~符号的都是需要按自己情况填写的
+
+结构：
+工作区--add-->暂存区--commit-->版本库
+
+git安装
+sudo apt-get install git
+
+安装后的设置
+git config --global user.name "~~Your Name"
+git config --global user.email "~~email@example.com"
+查看git配置
+git config --list
+
+将当前目录初始化为git可以管理的目录（创建了一个.git目录）
+git init
+
+将文件从工作区提交到暂存区
+git add ~~filename
+
+将暂存区文件提交到版本库（未加入到暂存区的不能提交到当前分支）
+git commit -m "description"
+
+查看仓库状态
+git status
+
+查看文件当前内容和最后加入到暂存区的版本的内容的不同
+git diff ~~filename
+查看文件和版本库里的文件的区别
+git diff HEAD -- ~~filename
+
+查看提交历史记录
+git log
+git log --pretty=oneline(每条记录只显示一行) --abbrev-commit(commit id缩写显示)
+查看命令历史记录，包含版本号
+git reflog
+查看最后一次提交
+git last
+
+将暂存区中内容回退到版本库中的版本
+git reset --hard HEAD
+HEAD代表最新提交的版本
+HEAD^代表上个版本
+HEAD^^代表上上个版本
+回退的版本太长，比如往上100个版本，可以用HEAD~100表示
+回退后,如果想还原到回退前的最新版本,可以找到之前最新版本的commit号,用reset回退
+git reset --hard ~~commitid
+回退单个文件
+git reset HEAD ~~filename
+
+丢弃工作区的修改
+git checkout -- ~~filename
+
+从版本库中删除文件
+git rm ~~filename
+git commit -m "description"
+
+本机生成ssh公私钥
+ssh-keygen -t rsa -C "~~youremail@example.com"
+
+把本地仓库的内容推送到GitHub仓库
+git remote add origin ~~git@github.com:michaelliao/learngit.git
+
+将当前分支master推送到远程
+git push -u origin master
+-u	把本地master分支和远程master分支关联起来
+
+将本地版本库推送到GitHub
+git push origin master
+git push origin dev
+
+将GitHub上的库克隆到本地
+git clone ~~git@github.com:michaelliao/gitskills.git
+默认只会克隆master分支，创建origin的dev分支到本地
+git checkout -b dev origin/dev
+
+如果多人对dev分支进行修改，一人推送后，其他人会推送失败，需要先
+git pull
+把最新的提交从origin/dev上抓下来，在本地合并，解决冲突后再推送，第一次pull时需要指定本地dev和远程origin/dev分支的链接
+git branch --set-upstream-to=origin/dev dev
+git pull
+解决冲突后，提交，再push
+
+创建新分支
+git checkout -b dev
+等价于
+git branch dev
+git checkout dev
+
+查看当前分支
+git branch
+当前分支前会有一个*号
+
+切换到master，合并dev分支
+git checkout master
+git merge dev
+默认为Fast forward模式，删除分支后，会丢掉分支信息
+
+删除dev分支
+git branch -d dev
+
+实际开发中master分支一般不在上面修改，都是在dev分支上，当dev分支修改完成后，再把dev分支合并到master
+禁用Fast forward模式，在merge时会生成一个新的commit
+git merge --no-ff -m "merge with no-ff" dev
+
+存储工作现场
+git stash
+查看保存的工作现场
+git stash list
+恢复保存的工作现场
+git stash apply	需要用git stash drop来删除stash内容
+git stash pop	恢复的同时把stash也删除了
+可以多次stash，恢复的时候，先用git stash list查看，然后恢复指定的stash
+git stash apply ~~stashlist中的号
+
+如果删除一个未合并的分支，需要加-D选项
+git branch -D ~~branchname
+
+查看远程库信息
+git remote -v
+
+把本地未push的分叉提交历史整理成直线
+git rebase
+git log --graph --pretty=oneline --abbrev-commit
+
+创建标签
+git tag v1.0
+默认的标签是打在最新提交的commit上的，即HEAD
+在之前的提交上打标签
+git tag v0.9 ~~commitid
+查看标签
+git tag
+标签不是按时间顺序列出，而是按字母排序
+查看标签信息
+git show v0.9
+创建带有说明的标签
+git tag -a v0.1 -m "version 0.1 released" ~~commitid
+-a	指定标签名
+-m	指定说明文字
+删除标签
+git tag -d v0.9
+将标签推送到远程
+git push origin v1.0
+将所有标签推送到远程
+git push origin --tags
+删除远程标签，先删除本地
+git tag -d v0.9
+再
+git push origin :refs/tags/v0.9
+
+自定义git
+让git显示颜色
+git config --global color.ui true
+忽略特殊文件
+在工作区的根目录下创建.gitignore文件，GitHub已准备了各种配置文件，见：https://github.com/github/gitignore
+已忽略的文件强制添加到git
+git add -f ~~filename
+检查文件是否被忽略
+git check-ignore -v ~~filename
+.gitignore应该放在版本库里
+
+配置别名
+将status起别名为st
+git config --global alias.st status
+查看提交历史记录例子
+git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+配置别名的配置文件
+每个仓库的配置文件
+.git/config
+当前用户的配置文件
+~/.gitconfig
+
