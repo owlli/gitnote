@@ -220,6 +220,8 @@ ssh-keygen -t rsa -C "~~youremail@example.com"
 git remote add origin ~~git@github.com:michaelliao/learngit.git
 ```
 
+> 添加后,远程库的名字就是origin,这是Git默认的叫法,也可以改成别的,但是origin这个名字一看就知道是远程库
+
 将当前分支master推送到远程
 
 ```shell
