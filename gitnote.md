@@ -410,13 +410,17 @@ git rebase
 git log --graph --pretty=oneline --abbrev-commit
 ```
 
-如果在A分支上执行
+也可以在两个不同的分支上变基,如果在branch1分支上执行
 
 ```shell
-git rebase B分支名
+git rebase master
 ```
 
-是把当前分支的修改加入到B分支的最后的提交上,如下图所示
+是把当前分支的修改加入到master的最后的提交上.
+
+变基即改变基地址,找到两个分支最近的共同祖先,根据当前分支(上例中`branch1`)的提交历史生成一系列补丁文件,然后以基地分支最后一个提交为新的提交起始点,应用之前生成的补丁文件,最后形成一个新的合并提交,从而使得变基分支成为基地分支的直接下游
+
+如下图所示
 
 ![gitrebase.png](./image/gitrebase.png)
 
