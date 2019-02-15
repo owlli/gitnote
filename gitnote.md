@@ -199,7 +199,7 @@ git revert -n ~~mergecommitid -m ~~n
 git checkout -- ~~filename
 ```
 
-> 如果没有--,就变成切换到另一个分支了,但是如果当前仓库没有~~filename分支,也可以不加--
+> 如果没有--,就变成切换到另一个分支了,但是如果当前仓库没有名为~~filename的分支,也可以不加--
 
 如果修改内容已经提交到暂存区了,就要使用git reset HEAD了
 
@@ -248,6 +248,14 @@ git push -u origin master
 
 > -u	把本地master分支和远程master分支关联起来,第一次push时需要加这个参数
 
+完整git push命令
+
+```shell
+git push <远程主机名> <本地分支名>:<远程分支名>
+```
+
+不过我们一般使用省略写法
+
 将本地版本库推送到GitHub
 
 ```shell
@@ -257,7 +265,25 @@ git push origin dev
 
 > -f	**不能用!!!**强制推送,如果本地仓库和远程仓库push有冲突,比如pull后有其他人向远程仓库push了,在本地commit,push时会报错,可以用-f把别人的push覆盖掉.**不能用!!!应该再次pull代码解决冲突后commit,push**
 
+从远程仓库拉代码
+
+```shell
+git fetch <远程主机名> <分支名>
+```
+
+和git push一样,我们一般使用省略写法
+
+git fetch后我们
+
 **git push只会把已加入版本分支的代码提交到服务器,暂存区和工作区的代码不会提交**
+
+把服务器代码拉到本地,完整git pull命令
+
+```shell
+git pull <远程主机> <远程分支>:<本地分支>
+```
+
+和git push一样,我们一般使用省略写法
 
 将GitHub上的库克隆到本地
 
@@ -299,6 +325,34 @@ git checkout -b dev
 >
 > git checkout dev
 
+git checkout其他用法
+
+```shell
+#检测版本库中哪些文件有改动,不能检测到新增的文件
+git checkout
+#将某个文件切换为某个分支的状态
+git checkout ~~branch -- ~~filename
+#将版本切换到某次提交状态,进入"分离头指针"状态
+git checkout ~~commitid
+#切到一个以某个分支最后一次commitid为名的分支,不加分支名就是当前分支
+git checkout --detach ~~branch
+#可以基于某一次commitid创建一个新分支
+git checkout -b ~~newbranch ~~commitid
+#或
+git branch ~~newbranch ~~commitid
+git checkout ~~newbranch
+#创建一个没有任何提交记录的"分支",这个"分支"中的所有文件都不在版本库中.这个"分支"必须做一次提交才能成为真正的分支.如果某个分支上积累了很多次提交,git checkout --prphan后,在这个新建的分支上没有任何提交
+git checkout --orphan ~~newbranch
+#将当前分支工作区的内容合并到切换的分支下,如果当前分支有修改,会回退到HEAD,切换到新分支下可能需要解决冲突
+git checkout --merge ~~newbranch
+#比较当前分支和目标分支之间的差异,并提供交互式界面选择进一步操作(是否替换为目标分支内容)
+git checkout -p ~~newbranch
+```
+
+>  -f	强制切换,如果在某个分支上修改了某个文件没有commit(在工作区修改或在工作区修改后git add),是无法切换到其他分支的,除非其他分支的那个文件和当前分支的文件相同.使用-f强制切换,**会把当前分支没有commit的内容全部撤销**,所以**不建议使用-f**
+>
+> -B	强制创建新的分支.直接git check -b是不能创建同名分支,但使用-B可以强制创建并覆盖掉原来的分支
+
 查看当前分支
 
 ```shell
@@ -308,6 +362,8 @@ git branch
 当前分支前会有一个*号
 
 > -a	显示本地和远程的分支
+>
+> -r	显示远程分支
 >
 > -v	显示分支的详细信息
 
@@ -354,6 +410,28 @@ git branch -d dev
 ```shell
 git branch -D ~~branchname
 ```
+
+删除远程分支
+
+```shell
+git branch -d -r ~~branchname
+#还需推送到服务器
+git push origin:~~branchname
+```
+
+### 重命名分支
+
+重命名本地分支
+
+```shell
+git branch -m ~~oldbranch ~~newbranch
+```
+
+> 重命名远程分支:
+>
+> 1.删除远程待修改分支
+>
+> 2.push本地新分支到远程服务器
 
 ### 合并冲突
 
