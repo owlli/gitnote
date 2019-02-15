@@ -2,7 +2,7 @@
 
 这是看廖雪峰git教程时做的笔记,然后再加上一些看其他资料做的笔记
 
-看了一些文章,git的功能太强大了,我觉得作为一个保存代码的工具没必要花太多精力学习git的每一个功能,这里只记录基本的用法,遇到不常见的操作搜索解决吧
+看了一些文章,git的功能太强大了,我觉得作为一个保存代码版本的工具没必要花太多精力学习git的每一个功能,这里只记录基本的用法,遇到不常见的操作搜索解决吧
 
 
 
@@ -49,11 +49,19 @@ git config --list
 git init
 ```
 
+> --git-dir=~~path	设置初始化仓库的路径,不加就为当前目录
+>
+> --bare	将仓库初始化为裸仓库.不加--bare时会在初始化目录生成一个.git文件夹,里面记录了当面仓库的配置和版本,加--bare时,初始化目录里所有文件就是.git文件夹下的文件,用户不能在这个目录下进行git操作.这个选项的目的是为了生成一个不允许操作的远程仓库.加--bare初始化的目录可以在目录名后加.git,从这个目录clone的项目目录名后不会加上.git
+
 将文件~~filename从工作区提交到暂存区
 
 ```shell
 git add ~~filename
 ```
+
+> git add -u：将文件的修改、文件的删除，添加到暂存区。
+> git add .：将文件的修改，文件的新建，添加到暂存区。
+> git add -A：将文件的修改，文件的删除，文件的新建，添加到暂存区。
 
 将暂存区文件提交到版本分支（未加入到暂存区的不能提交到当前分支）
 
@@ -61,7 +69,7 @@ git add ~~filename
 git commit -m "description"
 ```
 
-
+> -a	自动将被修改或被删除的文件加入到暂存区后提交,不会track新创建的文件
 
 ## 查看仓库状态和文件被修改内容
 
@@ -206,6 +214,14 @@ git rm ~~filename
 git commit -m "description"
 ```
 
+**如果工作区中文件没删除,git rm会删除工作区中的文件**
+
+> --cached		仅把文件从暂存区中删除,工作区中还存在
+>
+> -r			递归删除文件夹
+>
+> -n,--dry-run	看一下会删除哪些文件,并不会有真的删除操作
+
 
 
 ## 远程仓库
@@ -239,6 +255,8 @@ git push origin master
 git push origin dev
 ```
 
+> -f	**不能用!!!**强制推送,如果本地仓库和远程仓库push有冲突,比如pull后有其他人向远程仓库push了,在本地commit,push时会报错,可以用-f把别人的push覆盖掉.**不能用!!!应该再次pull代码解决冲突后commit,push**
+
 **git push只会把已加入版本分支的代码提交到服务器,暂存区和工作区的代码不会提交**
 
 将GitHub上的库克隆到本地
@@ -246,6 +264,8 @@ git push origin dev
 ```shell
 git clone ~~git@github.com:michaelliao/gitskills.git
 ```
+
+**也可以从本地一个被初始化的目录clone**
 
 查看远程仓库信息
 
@@ -428,7 +448,131 @@ git rebase master
 
 
 
+## 子模块
 
+### 克隆带子模块的项目
+
+```shell
+git clone /path/to/repos/foo.git
+git submodule init
+git submodule update
+```
+
+推荐用一条命令搞定
+
+```shell
+git clone --recursive /path/to/repos/foo.git
+```
+
+> --recursive	可以在clone项目时同时clone关联的submodules
+
+**项目只会记录子模块的commit id,子模块需要在项目中git submodule update或者在子模块目录中git pull才能把子模块远程代码拉下来**
+
+### 查看子模块是否被修改
+
+在项目目录执行
+
+```shell
+git diff
+```
+
+查看子模块最后的commitid和项目记录的子模块最后commitid是否相同
+
+### 查看子模块信息
+
+```shell
+git submodule
+```
+
+可以看到子模块的hash值和文件目录.刚clone项目代码时,hash值前有一个-号,代表改子模块没有被检出,检出submodule
+
+```shell
+git submodule init
+git submodule update
+#或者直接使用一句
+git submodule update --init --recursive
+```
+
+可以查看.git/config文件,里面有git仓库子模块的信息
+
+### git submodule update分支问题
+
+git submodule update后子模块的分支不在master上,因为:
+
+> Git对于Submodule有特殊的处理方式，在一个主项目中引入了Submodule其实Git做了3件事情：
+>
+> - 记录引用的仓库
+> - 记录主项目中Submodules的目录位置
+> - 记录引用Submodule的**commit id**
+>
+> 在**project1**中push之后其实就是更新了引用的commit id，然后project1-b在clone的时候获取到了submodule的commit id，然后当执行**git submodule update**的时候git就根据**gitlink**获取submodule的commit id，最后获取submodule的文件，所以clone之后不在任何分支上；
+
+项目中记录的子模块的commit id是和本模块相关的commit id,如下图,项目中使用的submodule中第2次提交的代码,所以在项目目录执行git submodule update会将submodule的第2次提交的代码拉下来生成一个新的分支并切换过去.
+
+![gitsubmoduleupdate.png](./image/gitsubmoduleupdate.png)
+
+如果在子模块目录切换到master分支执行git pull,或者在项目目录执行
+
+```shell
+git submodule foreach "git checkout master && git pull"
+```
+
+**会将submoduel的master分支的最新代码拉下来,而我们只需要submodule的master分支第2次提交的代码,这就达不到我们的目的了**
+
+所以,git submodule update后子模块分支不在master上是故意这么设计的
+
+### 添加子模块
+
+将远程仓库添加到本地项目作为子模块
+
+```shell
+git submodule add ~~远程仓库地址 ~~本地目录
+```
+
+> 如果本地目录不存在,会自动创建
+
+### 子模块维护规则
+
+添加子模块后,git status会在本地发现新增加了自己子模块的目录和一个.gitmodule文件,这个文件记录了每个submodule的引用信息,包含子模块在当前仓库的位置和子模块远程仓库的位置,然后需要在项目目录git add,commit,push
+
+修改子模块文件后,需要在子模块所在的目录下git add,commit,push,同时也需要在项目目录git add,commit,push
+
+### 删除子模块
+
+一般教程都是下面的方法
+
+```shell
+git rm --cached ~~submodule
+rm -rf ~~submodule
+#如果只有一个子模块,直接删除.gitmodules文件,如果有多个子模块只删除部分子模块,请修改.gitmodule文件把里面和待删除子模块的内容删除
+rm .gitmodules
+rm .git/modules/~~submodule
+vim .git/config
+```
+
+删除submodule相关内容.然后git add,commit,push到远程仓库
+
+后来发现用下面的方法更简单
+
+```shell
+git rm ~~submodule
+git status
+git commit -m "remove submodule"
+git push origin master
+```
+
+
+
+
+
+git submodule add一个子模块后,如果没有提交,git rm --cached,rm删除这个子模块,然后想再次git submodule add这个子模块,一定要修改.git/config文件,把里面和子模块相关的内容删除,还需要删除.git/modules/子模块名目录,否则再次git submodule add这个子模块时,会报错:
+
+> A git directory for 'libs/lib1' is found locally with remote(s):
+>   origin	/home/lzh/test/submd/ws/../repos/lib1
+> If you want to reuse this local git directory instead of cloning again from
+>   /home/lzh/test/submd/ws/../repos/lib1.git
+> use the '--force' option. If the local git directory is not the correct repo
+> or you are unsure what this means choose another name with the '--name' option.
 
 
 
