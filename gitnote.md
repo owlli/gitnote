@@ -1,14 +1,16 @@
 # git note
 
-这是看廖雪峰git教程时做的笔记,然后再加上一些看其他资料做的笔记
+这是我学习git过程中记录的笔记,方便我自己查找git命令和功能,如果没有任何git基础想通过这篇笔记学习git可能会有很大难度,建议在网上找那些带练习的git教程学习,多练习多思考,才能理解git
 
-看了一些文章,git的功能太强大了,我觉得作为一个保存代码版本的工具没必要花太多精力学习git的每一个功能,这里只记录基本的用法,遇到不常见的操作搜索解决吧
+这篇笔记最早是看廖雪峰git教程时做的笔记,都是最常使用到的git知识,后来在工作中发现这些知识不够用了,又加入了一些新学习到的git知识,同时把在查找资料中看到的不那么常用的git知识也摘抄下来
+
+在查找资料的过程中,我发现git的功能太强大了,完全精通的知识量应该不亚于精通一门数据库.我觉得作为一个保存代码版本的工具没必要花太多精力学习git的每一个功能,这里只记录基本的用法,遇到不常见的操作搜索解决吧
 
 
 
 ## 约定
 
-字段前带~~符号的都是需要按自己情况填写的
+字段前带~~符号或者<>括起来的文字的都是需要按自己情况填写的
 
 
 
@@ -33,11 +35,17 @@ git config --global user.name "~~YourName"
 git config --global user.email "~~email@example.com"
 ```
 
+> --global	代表全局参数,也就是这些配置在这台电脑的所有Git仓库下都有用,如果不加,那只针对当前的仓库起作用
+
 查看git配置
 
 ```shell
 git config --list
 ```
+
+> --global	查看全局的
+>
+> --local	查看当前的
 
 
 
@@ -70,6 +78,8 @@ git commit -m "description"
 ```
 
 > -a	自动将被修改或被删除的文件加入到暂存区后提交,不会track新创建的文件
+
+
 
 ## 查看仓库状态和文件被修改内容
 
@@ -118,6 +128,8 @@ git log
 > --abbrev-commit	commit id缩写,只显示前7位
 >
 > --oneline	等于--pretty=oneline加--abbrev-commit
+>
+> -p		显示每次提交的差异
 
 显示对repository所做的每一条操作记录,可以显示commit id,如果不小心回退到老版本,可以通过这条命令找到新版本的commit id
 
@@ -263,6 +275,8 @@ git push origin master
 git push origin dev
 ```
 
+**git push只会把已加入版本分支的代码提交到服务器,暂存区和工作区的代码不会提交**
+
 > -f	**不能用!!!**强制推送,如果本地仓库和远程仓库push有冲突,比如pull后有其他人向远程仓库push了,在本地commit,push时会报错,可以用-f把别人的push覆盖掉.**不能用!!!应该再次pull代码解决冲突后commit,push**
 
 从远程仓库拉代码
@@ -273,9 +287,13 @@ git fetch <远程主机名> <分支名>
 
 和git push一样,我们一般使用省略写法
 
-git fetch后我们会在一个分支上
+git fetch后我们还是在之前分支上,代码并没有改变,但我们会获得一个FETCH_HEAD,这个提交指向远程仓库最新的提交,要想更新到远程服务器上的最新代码需要
 
-**git push只会把已加入版本分支的代码提交到服务器,暂存区和工作区的代码不会提交**
+```shell
+git merge FETCH_HEAD
+#或者
+git merger origin ~~分支名
+```
 
 把服务器代码拉到本地,完整git pull命令
 
@@ -284,6 +302,16 @@ git pull <远程主机> <远程分支>:<本地分支>
 ```
 
 和git push一样,我们一般使用省略写法
+
+**git pull=git fetch + git merge**
+
+**git pull --rebase=git fetch + git rebase**
+
+解决完冲突后记得git add,commit.
+
+两者区别如下:
+
+![gitmergeandgitrebase.png](./image/gitmergeandgitrebase.png)
 
 将GitHub上的库克隆到本地
 
@@ -639,9 +667,7 @@ git commit -m "remove submodule"
 git push origin master
 ```
 
-
-
-
+### 遇到的问题记录
 
 git submodule add一个子模块后,如果没有提交,git rm --cached,rm删除这个子模块,然后想再次git submodule add这个子模块,一定要修改.git/config文件,把里面和子模块相关的内容删除,还需要删除.git/modules/子模块名目录,否则再次git submodule add这个子模块时,会报错:
 
@@ -654,54 +680,127 @@ git submodule add一个子模块后,如果没有提交,git rm --cached,rm删除�
 
 
 
+## 标签管理
 
+标签就是对某个分支的某次提交起别名,一般起成v1.0,v2.0这样的,方便管理
 
 创建标签
-git tag v1.0
-默认的标签是打在最新提交的commit上的，即HEAD
-在之前的提交上打标签
-git tag v0.9 ~~commitid
-查看标签
-git tag
-标签不是按时间顺序列出，而是按字母排序
-查看标签信息
-git show v0.9
-创建带有说明的标签
-git tag -a v0.1 -m "version 0.1 released" ~~commitid
--a	指定标签名
--m	指定说明文字
-删除标签
-git tag -d v0.9
-将标签推送到远程
-git push origin v1.0
-将所有标签推送到远程
-git push origin --tags
-删除远程标签，先删除本地
-git tag -d v0.9
-再
-git push origin :refs/tags/v0.9
 
-自定义git
+```shell
+git tag <标签名> <commit id>
+```
+
+> 如果不加commit id,默认当前commit id
+
+创建带备注的标签
+
+```shell
+git tag -a <标签名> -m "说明文字" <commit id>
+```
+
+查看已打标签
+
+```shell
+git tag
+```
+
+> 标签不是按时间顺序列出，而是按字母排序
+
+查看某个标签信息
+
+```shell
+git show <标签名>
+```
+
+**注意:标签总是和某个commit挂钩.如果这个commit既出现在master分支,又出现在dev分支,那么在这两个分支上都可以看到这个标签**
+删除标签
+
+```shell
+git tag -d <标签名>
+```
+
+
+将标签推送到远程
+
+```shell
+git push <远程库名> <标签名>
+```
+
+一次性推送全部尚未推送到远程的本地标签
+
+```shell
+git push <远程库名> --tags
+```
+
+如果标签已经推送到远程,要删除远程标签就麻烦一点
+
+```shell
+#先从本地删除
+git tag -d <标签名>
+#从远程删除
+git push <远程库名> :refs/tags/<标签名>
+```
+
+
+
+## 自定义git
+
 让git显示颜色
+
+```shell
 git config --global color.ui true
+```
+
 忽略特殊文件
+
 在工作区的根目录下创建.gitignore文件，GitHub已准备了各种配置文件，见：https://github.com/github/gitignore
+
 已忽略的文件强制添加到git
-git add -f ~~filename
+
+```shell
+git add -f <filename>
+```
+
 检查文件是否被忽略
-git check-ignore -v ~~filename
+
+```shell
+git check-ignore -v <filename>
+```
+
 .gitignore应该放在版本库里
 
 配置别名
-将status起别名为st
+
+例子:
+
+```shell
 git config --global alias.st status
+git config --global alias.co checkout
+git config --global alias.ci commit
+git config --global alias.br branch
+git config --global alias.unstage 'reset HEAD'
+git config --global alias.last 'log -1'
+```
+
+之后,git st就代表git status
+
 查看提交历史记录例子
+
+```shell
 git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+```
+
+删除别名
+
+```shell
+git config --global --unset alias.ci
+```
+
 配置别名的配置文件
-每个仓库的配置文件
-.git/config
-当前用户的配置文件
-~/.gitconfig
+
+每个仓库的配置文件在.git/config,里面的[alias]标签下就是别名的配置
+
+当前用户的配置文件在~/.gitconfig
 
 
 
