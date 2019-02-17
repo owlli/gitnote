@@ -804,5 +804,13 @@ git config --global --unset alias.ci
 
 
 
+## 参考连接
+
+[廖雪峰Git教程](https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000)
+
+[简单对比git pull和git pull --rebase的使用](https://www.cnblogs.com/kevingrace/p/5896706.html)
+
+[Git整理(四) git rebase 的使用](https://blog.csdn.net/FightFightFight/article/details/80850328)
+
 
 
