@@ -234,6 +234,22 @@ git commit -m "description"
 >
 > -n,--dry-run	看一下会删除哪些文件,并不会有真的删除操作
 
+### 删除新加文件
+
+git clean从工作目录中删除所有没有tracked过的文件,但git clean不能直接用,必须加参数,参数如下:
+
+> -n	提示哪些文件会被删除,不会真的删除
+>
+> -dn	提示哪些文件夹会被删除,不会真的删除
+>
+> -f	删除当前目录下所有没有track过的文件,不会删除.gitignore文件里面指定的文件夹和文件, 不管这些文件有没有被track过
+>
+> -f <path>	删除指定路径下的没有被track过的文件
+>
+> -df	删除当前目录下没有被track过的文件和文件夹
+>
+> -xf	删除当前目录下所有没有track过的文件. 不管他是否是.gitignore文件里面指定的文件夹和文件
+
 
 
 ## 远程仓库
@@ -513,6 +529,18 @@ git stash apply ~~stashlist中的号
 ```
 
 ### 多人协作
+
+如果有人在本地新拉了分支,在这个分支做修改后是不能直接
+
+```shell
+git push
+```
+
+需要在本地执行
+
+```shell
+git push --set-upstream <remotereponame> <newbranch>
+```
 
 如果多人对dev分支进行修改，一人在本地git commit,git push后,其他人在本地git commit,git push时会失败,需要先
 
