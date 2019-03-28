@@ -77,7 +77,7 @@ git add ~~filename
 git commit -m "description"
 ```
 
-> -a	自动将被修改或被删除的文件加入到暂存区后提交,不会track新创建的文件
+> -a	自动将被修改或被删除的文件加入到暂存区后提交,**但是不会track新创建的文件**
 
 
 
@@ -318,6 +318,20 @@ git pull <远程主机> <远程分支>:<本地分支>
 ```
 
 和git push一样,我们一般使用省略写法
+
+直接使用
+
+```shell
+git pull
+```
+
+会把服务器上所有分支新代码拉到本地,而直接用
+
+```shell
+git push
+```
+
+并不会把本地所有分支的更改推送到服务器,只会把当前分支的更改推送到服务器
 
 **git pull=git fetch + git merge**
 
