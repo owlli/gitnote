@@ -295,6 +295,23 @@ git push origin dev
 
 > -f	**不能用!!!**强制推送,如果本地仓库和远程仓库push有冲突,比如pull后有其他人向远程仓库push了,在本地commit,push时会报错,可以用-f把别人的push覆盖掉.**不能用!!!应该再次pull代码解决冲突后commit,push**
 
+设置push.default
+
+```shell
+git config --global push.default matching
+#或者
+git config --global push.default simple
+```
+
+> 当 push.default 设置为 'matching' 后，git 将推送和远程同名的所有
+> 本地分支。
+>
+> 从 Git 2.0 开始，Git 默认采用更为保守的 'simple' 模式，只推送当前
+> 分支到远程关联的同名分支，即 'git push' 推送当前分支。
+>
+> （'simple' 模式由 Git 1.7.11 版本引入。如果您有时要使用老版本的 Git，
+> 为保持兼容，请用 'current' 代替 'simple'）
+
 从远程仓库拉代码
 
 ```shell
