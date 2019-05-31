@@ -863,6 +863,17 @@ git config --global --unset alias.ci
 
 
 
+## 一些常见的例子
+
+```shell
+#记录7天内所有提交
+git log --topo-order -n 10 --pretty=format:'%h -%d %s %ci <%aN>' --abbrev-commit --date=relative
+```
+
+
+
+
+
 ## 参考连接
 
 [廖雪峰Git教程](https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000)
