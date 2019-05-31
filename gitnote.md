@@ -137,11 +137,19 @@ git log
 git reflog
 ```
 
-查看最后一次提交
+查看最后一次提交详情
 
 ```shell
-git last
+git show
 ```
+
+查看最后一次提交简介
+
+```shell
+git show --stat
+```
+
+
 
 
 
