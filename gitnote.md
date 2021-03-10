@@ -67,9 +67,9 @@ git init
 git add ~~filename
 ```
 
-> git add -u：将文件的修改、文件的删除，添加到暂存区。
-> git add .：将文件的修改，文件的新建，添加到暂存区。
-> git add -A：将文件的修改，文件的删除，文件的新建，添加到暂存区。
+> git add -u:将文件的修改、文件的删除,添加到暂存区.
+> git add .:将文件的修改,文件的新建,添加到暂存区.
+> git add -A:将文件的修改,文件的删除,文件的新建,添加到暂存区.
 
 将暂存区文件提交到版本分支（未加入到暂存区的不能提交到当前分支）
 
@@ -169,7 +169,7 @@ git reset --hard HEAD
 >
 > HEAD^^代表上上个版本
 >
-> 回退的版本太长，比如往上100个版本，可以用HEAD~100表示
+> 回退的版本太长,比如往上100个版本,可以用HEAD~100表示
 >
 > 回退后,如果想还原到回退前的最新版本,可以找到之前最新版本的commit号,用reset回退
 >
@@ -213,15 +213,17 @@ git revert -n ~~mergecommitid -m ~~n
 
 ## 撤销修改
 
-让工作区的文件内容恢复为暂存区中的文件内容
+因为暂存区的存在,撤销修改分为几种情况（通过 `git status` 查看仓库状态时会提示相关撤销修改的命令）:
 
-```shell
-git checkout -- ~~filename
-```
+- 修改后,文件没有放入暂存区（即文件一直在工作区）:用 `git checkout -- 文件名` 撤销工作区的改动（回到跟版本库一样的状态,即回到最近一次 `git commit`时的状态,所有改动全部清除）
+- 修改后,文件放入暂存区,且文件没有再次修改（即文件已经进入暂存区）:分两步:先用 `git reset <文件名>` 撤销 `git add` 操作（此时更改仍留在工作区）,再执行 `git checkout -- 文件名` 清除工作区的改动
+- 修改后,文件放入暂存区,且文件再次修改:分三步:先用 `git checkout -- 文件名` 撤销工作区的改动,再用 `git reset <文件名>` 撤销 `git add` 操作（此时更改仍留在工作区）,最后执行 `git checkout -- 文件名` 清除工作区的改动
 
-> 如果没有--,就变成切换到另一个分支了,但是如果当前仓库没有名为~~filename的分支,也可以不加--
+通过 git checkout -- 文件名 命令可以撤销文件在工作区的修改.
+通过 git reset 文件名 命令可以撤销指定文件的 git add 操作,即这个文件在暂存区的修改.
+通过 git reset 命令可以撤销之前的所有 git add 操作,即在暂存区的修改.
 
-如果修改内容已经提交到暂存区了,就要使用git reset HEAD了
+> --表示命令行在--之后没有更多选项了,这样的好处是如果碰巧有一个分支与文件名重名,仍然可以恢复该文件,而不是切换到同名的分支.但是如果当前仓库没有名为~~filename的分支,也可以不加--
 
 
 
@@ -311,14 +313,14 @@ git config --global push.default matching
 git config --global push.default simple
 ```
 
-> 当 push.default 设置为 'matching' 后，git 将推送和远程同名的所有
-> 本地分支。
+> 当 push.default 设置为 'matching' 后,git 将推送和远程同名的所有
+> 本地分支.
 >
-> 从 Git 2.0 开始，Git 默认采用更为保守的 'simple' 模式，只推送当前
-> 分支到远程关联的同名分支，即 'git push' 推送当前分支。
+> 从 Git 2.0 开始,Git 默认采用更为保守的 'simple' 模式,只推送当前
+> 分支到远程关联的同名分支,即 'git push' 推送当前分支.
 >
-> （'simple' 模式由 Git 1.7.11 版本引入。如果您有时要使用老版本的 Git，
-> 为保持兼容，请用 'current' 代替 'simple'）
+> （'simple' 模式由 Git 1.7.11 版本引入.如果您有时要使用老版本的 Git,
+> 为保持兼容,请用 'current' 代替 'simple'）
 
 从远程仓库拉代码
 
@@ -384,7 +386,7 @@ git remote
 
 > -v	显示更详细的信息
 
-默认只会克隆master分支，创建origin的dev分支到本地
+默认只会克隆master分支,创建origin的dev分支到本地
 
 ```shell
 git checkout -b dev origin/dev
@@ -464,7 +466,7 @@ git merge命令用于合并指定分支到当前分支
 
 ![gitfastforward.png](./image/gitfastforward.png)
 
-实际开发中master分支一般不在上面修改，都是在dev分支上，当dev分支修改完成后，再把dev分支合并到master
+实际开发中master分支一般不在上面修改,都是在dev分支上,当dev分支修改完成后,再把dev分支合并到master
 
 **禁用Fast forward模式合并,在merge时会在master上生成一个新的commit**
 
@@ -488,7 +490,7 @@ git branch -d dev
 
 删除分支后,会丢掉分支信息
 
-如果删除一个未合并的分支，需要加-D选项
+如果删除一个未合并的分支,需要加-D选项
 
 ```shell
 git branch -D ~~branchname
@@ -561,7 +563,7 @@ git stash apply
 git stash pop	
 ```
 
-可以多次stash，恢复的时候，先用git stash list查看，然后恢复指定的stash
+可以多次stash,恢复的时候,先用git stash list查看,然后恢复指定的stash
 
 ```shell
 git stash apply ~~stashlist中的号
@@ -581,13 +583,13 @@ git push
 git push --set-upstream <remotereponame> <newbranch>
 ```
 
-如果多人对dev分支进行修改，一人在本地git commit,git push后,其他人在本地git commit,git push时会失败,需要先
+如果多人对dev分支进行修改,一人在本地git commit,git push后,其他人在本地git commit,git push时会失败,需要先
 
 ```shell
 git pull
 ```
 
-把最新的提交从origin/dev上抓下来，在本地合并，解决冲突后再推送，第一次pull时会报错:no tracking information,说明本地分支和远程分支的链接关系没有创建，用命令需要指定本地dev和远程origin/dev分支的链接
+把最新的提交从origin/dev上抓下来,在本地合并,解决冲突后再推送,第一次pull时会报错:no tracking information,说明本地分支和远程分支的链接关系没有创建,用命令需要指定本地dev和远程origin/dev分支的链接
 
 ```shell
 git branch --set-upstream-to=origin/dev dev
@@ -672,13 +674,13 @@ git submodule update --init --recursive
 
 git submodule update后子模块的分支不在master上,因为:
 
-> Git对于Submodule有特殊的处理方式，在一个主项目中引入了Submodule其实Git做了3件事情：
+> Git对于Submodule有特殊的处理方式,在一个主项目中引入了Submodule其实Git做了3件事情:
 >
 > - 记录引用的仓库
 > - 记录主项目中Submodules的目录位置
 > - 记录引用Submodule的**commit id**
 >
-> 在**project1**中push之后其实就是更新了引用的commit id，然后project1-b在clone的时候获取到了submodule的commit id，然后当执行**git submodule update**的时候git就根据**gitlink**获取submodule的commit id，最后获取submodule的文件，所以clone之后不在任何分支上；
+> 在**project1**中push之后其实就是更新了引用的commit id,然后project1-b在clone的时候获取到了submodule的commit id,然后当执行**git submodule update**的时候git就根据**gitlink**获取submodule的commit id,最后获取submodule的文件,所以clone之后不在任何分支上；
 
 项目中记录的子模块的commit id是和本模块相关的commit id,如下图,项目中使用的submodule中第2次提交的代码,所以在项目目录执行git submodule update会将submodule的第2次提交的代码拉下来生成一个新的分支并切换过去.
 
@@ -771,7 +773,7 @@ git tag -a <标签名> -m "说明文字" <commit id>
 git tag
 ```
 
-> 标签不是按时间顺序列出，而是按字母排序
+> 标签不是按时间顺序列出,而是按字母排序
 
 查看某个标签信息
 
@@ -820,7 +822,7 @@ git config --global color.ui true
 
 忽略特殊文件
 
-在工作区的根目录下创建.gitignore文件，GitHub已准备了各种配置文件，见：https://github.com/github/gitignore
+在工作区的根目录下创建.gitignore文件,GitHub已准备了各种配置文件,见:https://github.com/github/gitignore
 
 已忽略的文件强制添加到git
 
@@ -890,5 +892,5 @@ git log --topo-order -n 10 --pretty=format:'%h -%d %s %ci <%aN>' --abbrev-commit
 
 [Git整理(四) git rebase 的使用](https://blog.csdn.net/FightFightFight/article/details/80850328)
 
-
+[Git - 暂存区及撤销修改](https://blog.csdn.net/kikajack/article/details/79846098)
 
