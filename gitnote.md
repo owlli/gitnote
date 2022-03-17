@@ -161,8 +161,13 @@ git show --stat
 
 ```shell
 git reset --hard HEAD
+git reset --soft HEAD
 ```
 
+> --hard代表回到指定的版本,之后所有的修改都没了
+>
+> --soft代表回到指定的版本,但之后的所有修改都在,存在暂存区
+>
 > HEAD代表最新提交的版本
 >
 > HEAD^代表上个版本
@@ -178,6 +183,8 @@ git reset --hard HEAD
 > 回退单个文件
 >
 > git reset HEAD ~~filename
+
+回退到老版本的版本后,如果想重新回到回退前的新版本,可以用`git reflog`查看所有版本切换切换记录,找到回退前的版本号,再用`git reset`回到新版本
 
 
 
